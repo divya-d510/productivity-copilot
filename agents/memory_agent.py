@@ -1,17 +1,24 @@
 import os
 from tools.mcp_toolsets import get_memory_toolset
-from utils.response_formatter import format_memory_response
 
 DEMO_USER_ID = os.getenv("DEMO_USER_ID", "00000000")
 
 tools = get_memory_toolset()
 
 
-def memory_agent(user_input: str):
-    notes = tools[0](user_input, DEMO_USER_ID)
-    tasks = tools[1](user_input, DEMO_USER_ID)
+async def memory_agent(user_input: str):
+    results = []
 
-    if not notes and not tasks:
-        return "No results found"
+    notes = await tools[0](DEMO_USER_ID, user_input, 5)
+    tasks = await tools[1](DEMO_USER_ID, user_input, 5)
 
-    return format_memory_response(f"{notes}\n{tasks}")
+    if notes:
+        results.append("## Notes\n" + str(notes))
+
+    if tasks:
+        results.append("## Tasks\n" + str(tasks))
+
+    if not results:
+        return "No relevant results found"
+
+    return "\n\n".join(results)

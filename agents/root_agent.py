@@ -1,27 +1,21 @@
 from agents.calendar_agent import calendar_agent
 from agents.task_notes_agent import task_notes_agent
 from agents.memory_agent import memory_agent
-from utils.rule_engine import detect_intents
-from utils.response_formatter import format_section
 
 
 async def root_agent(user_input: str):
-    intents = detect_intents(user_input)
-    sections = []
+    text = user_input.lower()
 
-    if "memory" in intents:
-        res = memory_agent(user_input)
-        sections.append(format_section("Memory", res))
+    # 🔍 MEMORY FIRST
+    if "find" in text or "search" in text:
+        return await memory_agent(user_input)
 
-    if "calendar" in intents:
-        res = calendar_agent(user_input)
-        sections.append(format_section("Calendar", res))
+    # 📅 CALENDAR
+    if "meeting" in text or "schedule" in text:
+        return await calendar_agent(user_input)
 
-    if "task" in intents or "note" in intents:
-        res = await task_notes_agent(user_input)
-        sections.append(format_section("Tasks", res))
+    # 📝 TASK / NOTES
+    if "task" in text or "todo" in text or "note" in text or "list" in text:
+        return await task_notes_agent(user_input)
 
-    if not sections:
-        return "Sorry, I couldn't understand your request."
-
-    return "".join(sections).strip()
+    return "Request not understood"

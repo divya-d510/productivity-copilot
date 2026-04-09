@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Productivity Copilot</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      margin-top: 50px;
+    }
+
+    .container {
+      width: 500px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    input {
+      width: 75%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px;
+      margin: 5px;
+      border: none;
+      background: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .quick-buttons {
+      margin-top: 10px;
+    }
+
+    .output {
+      margin-top: 20px;
+      background: #111;
+      color: #0f0;
+      padding: 10px;
+      border-radius: 5px;
+      min-height: 120px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>🚀 Productivity Copilot</h2>
+
+  <input id="msg" placeholder="Enter your command..." />
+  <button onclick="send()">Send</button>
+
+  <div class="quick-buttons">
+    <button onclick="quick('create a high priority task to learn Kubernetes tomorrow')">Task</button>
+    <button onclick="quick('schedule a meeting tomorrow at 3pm')">Meeting</button>
+    <button onclick="quick('create a note about system design')">Note</button>
+    <button onclick="quick('list all tasks')">List Tasks</button>
+    <button onclick="quick('find my Kubernetes notes')">Search</button>
+    <button onclick="quick('schedule meeting tomorrow 3pm and create a task to prepare slides')">🔥 Demo</button>
+  </div>
+
+  <div class="output" id="output">Response will appear here...</div>
+</div>
+
+<script>
+async function send() {
+  const message = document.getElementById("msg").value;
+  const output = document.getElementById("output");
+
+  if (!message) return;
+
+  output.innerText = "⏳ Thinking...";
+
+  try {
+    const res = await fetch("http://localhost:8080/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message })
+    });
+
+    const data = await res.json();
+
+    output.innerText = data.response;
+
+  } catch (err) {
+    output.innerText = "❌ Error connecting to backend";
+  }
+}
+
+function quick(text) {
+  document.getElementById("msg").value = text;
+}
+</script>
+
+</body>
+</html>

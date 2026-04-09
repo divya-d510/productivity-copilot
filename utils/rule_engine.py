@@ -47,8 +47,10 @@ def extract_title(text: str):
 
     for word in [
         "create", "task", "todo",
+        "meeting", "schedule", "event",
         "high priority", "low priority",
-        "tomorrow", "today"
+        "tomorrow", "today", "at",
+        "am", "pm"
     ]:
         text = text.replace(word, "")
 
@@ -56,6 +58,4 @@ def extract_title(text: str):
     words = text.split()
     words = [w for w in words if w not in ["a", "an", "the"]]
 
-    cleaned = " ".join(words)
-
-    return cleaned.strip()
+    return " ".join(words).strip()

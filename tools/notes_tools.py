@@ -11,7 +11,7 @@ async def create_note(
     query = """
         INSERT INTO notes (user_id, title, content, tags)
         VALUES ($1::uuid, $2, $3, string_to_array($4, ','))
-        RETURNING id, title, created_at
+        RETURNING id, title, content, created_at
     """
     result = await execute_single(query, user_id, title, content, tags)
     return dict(result)
