@@ -1,0 +1,12 @@
+FROM --platform=linux/amd64 debian:12-slim
+
+RUN apt-get update && apt-get install -y curl ca-certificates && \
+    curl -L -o /usr/local/bin/toolbox \
+      https://storage.googleapis.com/genai-toolbox/v0.31.0/linux/amd64/toolbox && \
+    chmod +x /usr/local/bin/toolbox && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY toolbox-cloud.yaml /app/tools.yaml
+
+EXPOSE 8080
+ENTRYPOINT ["/usr/local/bin/toolbox", "--config", "/app/tools.yaml", "--address", "0.0.0.0", "--port", "8080"]

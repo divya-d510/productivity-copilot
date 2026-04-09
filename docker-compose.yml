@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # PostgreSQL with vector support
+  postgres:
+    image: ankane/pgvector:latest
+    environment:
+      POSTGRES_DB: productivity_db
+      POSTGRES_USER: productivity_user
+      POSTGRES_PASSWORD: AppPassword456!
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U productivity_user -d productivity_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Productivity Copilot API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+      - GOOGLE_CLOUD_LOCATION=${GOOGLE_CLOUD_LOCATION:-us-central1}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - APP_NAME=productivity-copilot
+      - DEMO_USER_ID=00000000-0000-0000-0000-000000000001
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=productivity_db
+      - DB_USER=productivity_user
+      - DB_PASSWORD=AppPassword456!
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./agents:/app/agents
+      - ./api:/app/api
+      - ./tools:/app/tools
+
+volumes:
+  postgres_data:
