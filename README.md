@@ -152,6 +152,3 @@ Format code:
 black agents/ api/ tools/
 ```
 
-## License
-
-MIT
